@@ -113,6 +113,7 @@ AAUUTTHHOORRSS
 BBUUGGSS
      The assignment of Julian–Gregorian switching dates to country codes is
      historically naive for many countries.
+     historically naive for many countries 2
 
      Not all options are compatible and using them in different orders will
      give varying results.

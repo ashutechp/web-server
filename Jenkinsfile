@@ -14,7 +14,7 @@ pipeline {
         }
         stage('read') {
             steps {
-               cat index.html
+               sh 'cat index.html'
             }
         }
     }

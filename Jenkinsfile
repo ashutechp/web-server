@@ -12,5 +12,10 @@ pipeline {
                sh 'date'
             }
         }
+        stage('read') {
+            steps {
+               cat index.html
+            }
+        }
     }
 }

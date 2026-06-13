@@ -1,21 +1,23 @@
 pipeline {
-    agent any
+    agent: any
+    environment {
+        LINUX = 'redhat'
+    }
+    parameters {
+     string(name: "person", defaultValue: "Ashutosh Pandey", description: "How are you?")
+    }
 
     stages {
-        stage('Hello') {
-            steps {
-                echo 'Hello World'
-            }
+    stage('run linux command'){
+        steps{
+           sh 'date'
         }
-        stage('date') {
-            steps {
-               sh 'date'
-            }
+    }
+
+    stage('Check parameters'){
+        steps {
+            sh 'echo $person'
         }
-        stage('read') {
-            steps {
-               sh 'cat index.html'
-            }
-        }
+    }
     }
 }

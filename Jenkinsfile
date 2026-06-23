@@ -5,10 +5,11 @@ agent any
 stages {
     
         stage("Parallel Tasks"){
-            
-            steps{
+        parallel { 
+                steps{
                 echo "First Job"
             }
+        }
         }
                     
   }

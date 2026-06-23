@@ -25,5 +25,14 @@ stages {
             always {
                   echo 'This code always execute'
             }
+            success{
+                  echo 'This code success execute'
+            }
+            unstable {
+                  echo 'This code unstable execute'
+            }
+            failure {
+                  echo 'This code failure execute'
+            }
       }
 }

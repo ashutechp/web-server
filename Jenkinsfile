@@ -9,6 +9,11 @@ stages {
                 echo "First Job"
             }
           }
+                  stage("parallel 2") {
+                        steps{
+                              sh 'date'
+                        }
+                  }
         }
         }
                     

@@ -16,7 +16,7 @@ agent{
                 ansiblePlaybook(
                     credentialsId: 'ansible-ssh',
                     inventory: '/home/student/ansible/inventory',
-                    playbook: 'home/student/ansible/myplaybook.yml'
+                    playbook: '/home/student/ansible/myplaybook.yml'
                 )
             }
         }

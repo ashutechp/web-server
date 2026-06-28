@@ -1,39 +1,80 @@
 pipeline {
-agent{      
-    node { label 'ansible'}     
-  }
+    agent { label 'docker' }
+
+    environment {
+        IMAGE = "myapp:${BUILD_NUMBER}"
+
+        // Docker Hub
+        DOCKER_IMAGE = "ashutech517/ansible-job"
+        DOCKER_TAG = "${BUILD_NUMBER}"
+
+        // Docker credentials
+        DOCKER_CREDS = credentials('dockerhub-creds')
+    }
 
     stages {
-        stage('Checkout Code') {
+
+        stage('Checkout') {
             steps {
-                // Assuming you have your Ansible playbook in a SCM like Git
                 checkout scm
             }
         }
 
-        stage('Run Ansible Playbook') {
+        stage('Build Docker Image') {
             steps {
-                ansiblePlaybook(
-                    credentialsId: 'ansible-ssh',
-                    inventory: '/home/student/ansible/inventory',
-                    playbook: '/home/student/ansible/myplaybook.yml'
-                )
+                script {
+                    // Build local image
+                    sh 'docker build -t $IMAGE .'
+
+                    // Tag image for Docker Hub
+                    sh 'docker tag $IMAGE ${DOCKER_IMAGE}:${DOCKER_TAG}'
+                }
+            }
+        }
+
+        stage('Unit Test') {
+            steps {
+                sh 'docker run --rm $IMAGE echo "Running tests..."'
+            }
+        }
+
+        stage('Docker Login') {
+            steps {
+                sh '''
+                    echo $DOCKER_CREDS_PSW | docker login -u $DOCKER_CREDS_USR --password-stdin
+                '''
+            }
+        }
+
+        stage('Push Docker Image') {
+            steps {
+                sh 'docker push ${DOCKER_IMAGE}:${DOCKER_TAG}'
+            }
+        }
+
+        stage('Deploy') {
+            steps {
+                sh '''
+                    docker rm -f myapp || true
+                    docker run -d --name myapp -p 8080:80 ${DOCKER_IMAGE}:${DOCKER_TAG}
+                '''
             }
         }
     }
 
     post {
-        always {
-            // Archive the Ansible playbook execution logs
-            echo 'Playbook executed always successfully!'
-        }
+
         success {
-           // Notify success
-            echo 'Playbook executed successfully!'
+            echo "Deployment successful and Docker image pushed!"
         }
+
         failure {
-          // Notify failure
-            echo 'Playbook execution failed!'
+            echo "Pipeline failed!"
+        }
+
+        always {
+            sh 'docker logout || true'
+            sh 'docker system prune -f'
         }
     }
 }

@@ -1,36 +1,38 @@
-pipeline {
-agent any
+agent{      
+    node { label 'ansible'}     
+  }
 
+    stages {
+        stage('Checkout Code') {
+            steps {
+                // Assuming you have your Ansible playbook in a SCM like Git
+                checkout scm
+            }
+        }
 
-stages {
+        stage('Run Ansible Playbook') {
+            steps {
+                ansiblePlaybook(
+                    credentialsId: 'ansible-ssh',
+                    inventory: '/home/student/ansible/inventory',
+                    playbook: 'home/student/ansible/myplaybook.yml'
+                )
+            }
+        }
+    }
 
-      stage("Parallel Tasks"){
-            parallel { 
-                  stage("parallel 1") {
-                        steps{
-                             echo "First Job"
-                            }
-                      }
-                  stage("parallel 2") {
-                        steps{
-                              sh 'date'
-                             }
-                      }
-                   } 
-            }
-      }
-      post{
-            always {
-                  echo 'This code always execute'
-            }
-            success{
-                  echo 'This code success execute'
-            }
-            unstable {
-                  echo 'This code unstable execute'
-            }
-            failure {
-                  echo 'This code failure execute'
-            }
-      }
+    post {
+        always {
+            // Archive the Ansible playbook execution logs
+            archiveArtifacts '*.log'
+        }
+        success {
+           // Notify success
+            echo 'Playbook executed successfully!'
+        }
+        failure {
+          // Notify failure
+            echo 'Playbook execution failed!'
+        }
+    }
 }

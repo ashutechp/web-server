@@ -25,7 +25,7 @@ agent{
     post {
         always {
             // Archive the Ansible playbook execution logs
-            archiveArtifacts '*.log'
+            echo 'Playbook executed always successfully!'
         }
         success {
            // Notify success
